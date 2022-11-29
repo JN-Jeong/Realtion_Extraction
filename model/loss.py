@@ -35,8 +35,8 @@ def CELoss(output, target, conf=None):
     return loss_func(output, target)
 
 def FocalLoss(output, target, conf=None):
-    alpha = 0.25
-    gamma = 1
+    alpha = 1
+    gamma = 2
     loss_func = nn.CrossEntropyLoss(label_smoothing=conf.train.label_smoothing)(output, target)
     pt = torch.exp(-loss_func)
     F_loss = alpha * (1 - pt) ** gamma * loss_func
