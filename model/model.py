@@ -16,9 +16,9 @@ from torchmetrics.classification.accuracy import Accuracy
 from pytorch_lightning.loops.fit_loop import FitLoop
 from pytorch_lightning.loops.loop import Loop
 from pytorch_lightning.trainer.states import TrainerFn
-from transformers import AutoModelForSequenceClassification
+from transformers import AutoModelForSequenceClassification, AutoConfig
 from data_loader.data_loaders import KfoldDataloader, BaseKFoldDataModule
-
+from model.entity_type_embedding_layer import CustomRobertaEmbeddings
 
 warnings.filterwarnings("ignore")
 
@@ -39,6 +39,14 @@ class BaseModel(pl.LightningModule):
         if self.config.train.use_frozen == True:
             self.freeze()
         self.plm.resize_token_embeddings(new_vocab_size)
+
+        # entity embedding layer를 사용할 경우
+        if (
+            config.model.name == "klue/roberta-large"
+            and self.config.train.entity_embedding_layer
+        ):
+            embedding_config = AutoConfig.from_pretrained("klue/roberta-large")
+            self.plm.roberta.embeddings = CustomRobertaEmbeddings(embedding_config)        
 
         print(self.plm.__dict__)
         self.loss_func = loss_module.loss_config[self.config.train.loss]
