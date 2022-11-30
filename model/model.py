@@ -43,7 +43,7 @@ class BaseModel(pl.LightningModule):
         # entity embedding layer를 사용할 경우
         if (
             config.model.name == "klue/roberta-large"
-            and self.config.train.entity_embedding_layer
+            and self.config.model.entity_embedding_layer
         ):
             embedding_config = AutoConfig.from_pretrained("klue/roberta-large")
             self.plm.roberta.embeddings = CustomRobertaEmbeddings(embedding_config)        
